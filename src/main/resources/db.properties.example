@@ -1,0 +1,27 @@
+# =====================================================================
+#  FashionStore - Configuração de acesso ao banco de dados (MODELO)
+#
+#  COMO USAR:
+#  1. Copie este arquivo para "db.properties", na MESMA pasta
+#     (src/main/resources/db.properties).
+#  2. Preencha os dados recebidos de quem criou o banco.
+#
+#  O arquivo db.properties está no .gitignore: ele NUNCA vai para o
+#  GitHub, porque contém a senha. Este arquivo .example pode ir, pois
+#  não tem dados reais.
+# =====================================================================
+
+# Endereço do servidor MySQL (localhost = este computador)
+db.host=localhost
+
+# Porta do MySQL (padrão 3306)
+db.port=3306
+
+# Nome do banco
+db.name=fashionstore
+
+# Usuário criado para a aplicação (não use o root)
+db.user=fashionstore_app
+
+# Senha do usuário acima
+db.password=

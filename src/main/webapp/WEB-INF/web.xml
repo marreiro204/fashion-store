@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    web.xml = "Deployment Descriptor".
+    Configurações gerais da aplicação web. Os Servlets serão mapeados
+    com a anotação @WebServlet, então aqui ficam só configurações globais.
+    Versão 6.0 = Jakarta EE 10 (compatível com Tomcat 10.1).
+-->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>FashionStore</display-name>
+
+    <!-- Página aberta ao acessar http://localhost:8080/FashionStore/ -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Lê os formulários (POST) e responde em UTF-8: acentos corretos -->
+    <request-character-encoding>UTF-8</request-character-encoding>
+    <response-character-encoding>UTF-8</response-character-encoding>
+
+    <!-- Sessão expira após 30 minutos sem atividade -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <!-- Impede que JavaScript leia o cookie de sessão -->
+            <http-only>true</http-only>
+        </cookie-config>
+        <!-- Evita que o ID da sessão apareça na URL (;jsessionid=...) -->
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- Todas as JSPs usam UTF-8 (acentos funcionam corretamente) -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+
+    <!-- Páginas de erro amigáveis (sem mostrar detalhes técnicos ao usuário) -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/views/erro/403.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/erro/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/views/erro/500.jsp</location>
+    </error-page>
+
+</web-app>

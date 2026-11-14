@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Configuração do Tomcat específica desta aplicação.
+
+    sameSiteCookies="lax": o cookie de sessão (JSESSIONID) NÃO é enviado
+    quando outro site tenta enviar um formulário (POST) para o FashionStore.
+    Isso protege contra CSRF (um site malicioso fazendo ações em nome do
+    usuário logado, como sair da conta ou finalizar um pedido).
+-->
+<Context>
+    <CookieProcessor sameSiteCookies="lax" />
+</Context>

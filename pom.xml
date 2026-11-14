@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    pom.xml = "Project Object Model".
+    É o arquivo central do Maven: diz o nome do projeto, a versão do Java,
+    as bibliotecas (dependências) e como o projeto deve ser empacotado.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Identificação do projeto -->
+    <groupId>br.com.fashionstore</groupId>
+    <artifactId>FashionStore</artifactId>
+    <version>1.0.0</version>
+
+    <!-- WAR = Web Application Archive: o formato que o Tomcat entende -->
+    <packaging>war</packaging>
+
+    <name>FashionStore - Loja Virtual de Roupas</name>
+
+    <properties>
+        <!-- Compila o código para Java 21 -->
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+
+        <!-- ===== APIs fornecidas pelo Tomcat 10.1 (scope = provided) =====
+             "provided" significa: precisamos delas para COMPILAR,
+             mas NÃO devem ir dentro do WAR, porque o Tomcat já as possui.
+             Tomcat 10.1 implementa Servlet 6.0, JSP 3.1 e EL 5.0. -->
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ===== JSTL (tags c:forEach, c:if etc.) =====
+             O Tomcat NÃO traz JSTL, então ela precisa ir dentro do WAR
+             (scope padrão = compile). -->
+
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+            <exclusions>
+                <!-- A EL (Expression Language) já vem no Tomcat.
+                     Excluímos para não ter duas cópias da mesma API. -->
+                <exclusion>
+                    <groupId>jakarta.el</groupId>
+                    <artifactId>jakarta.el-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- ===== Driver JDBC do MySQL =====
+             Só será usado a partir da Etapa 3, mas já fica configurado. -->
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+
+        <!-- ===== BCrypt para hash de senhas =====
+             Será usado na Etapa 4 (cadastro e login). -->
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <!-- Nome do arquivo gerado: target/FashionStore.war
+             A URL da aplicação será http://localhost:8080/FashionStore -->
+        <finalName>FashionStore</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

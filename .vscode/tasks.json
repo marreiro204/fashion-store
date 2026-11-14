@@ -1,0 +1,92 @@
+{
+    // Tarefas do VS Code para o FashionStore.
+    // Execute com: Ctrl+Shift+P > "Tasks: Run Task" (ou Ctrl+Shift+B para o build + deploy).
+    // Cada tarefa primeiro roda .vscode/ambiente.ps1, que recarrega PATH, JAVA_HOME,
+    // MAVEN_HOME, CATALINA_HOME e CATALINA_BASE direto do Windows.
+    // Obs.: os comandos usam só aspas simples e Join-Path, porque aspas duplas e
+    // barras invertidas no final quebram ao passar pelo powershell.exe -Command.
+    "version": "2.0.0",
+    "options": {
+        "shell": {
+            "executable": "powershell.exe",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+        }
+    },
+    "tasks": [
+        {
+            "label": "1. Maven: gerar WAR",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; mvn clean package",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "2. Tomcat: publicar WAR",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; Copy-Item -Force target/FashionStore.war (Join-Path $env:CATALINA_BASE 'webapps'); Write-Host 'WAR copiado. Acesse http://localhost:8080/FashionStore/'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build + Deploy",
+            "dependsOrder": "sequence",
+            "dependsOn": ["1. Maven: gerar WAR", "2. Tomcat: publicar WAR"],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: classes Model",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp 'target/classes;target/test-classes' br.com.fashionstore.model.TesteModelos }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: autenticação",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.service.TesteAutenticacao }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: produtos e categorias",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.service.TesteProdutosCategorias }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: estoque",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.service.TesteEstoque }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: conexão com o banco",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.dao.TesteConexao }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: DAOs (CRUD)",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.dao.TesteDAOs }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Tomcat: iniciar",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; & (Join-Path $env:CATALINA_HOME 'bin/catalina.bat') run",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Tomcat: parar",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; & (Join-Path $env:CATALINA_HOME 'bin/shutdown.bat')",
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+# Saída do Maven
+target/
+
+# Configuração do banco com credenciais reais (NUNCA versionar)
+src/main/resources/db.properties
+
+# IDE / sistema
+.vscode/settings.json
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
