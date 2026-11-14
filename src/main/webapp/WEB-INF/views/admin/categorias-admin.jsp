@@ -6,16 +6,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorias - Admin - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Categorias - Admin - Fashion Store</title>
+    <c:set var="areaAdmin" value="true" />
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
 
-<main class="conteudo">
-    <p><a href="${ctx}/admin">&larr; Painel administrativo</a></p>
+<main id="conteudo" class="principal">
+<div class="container">
+    <div class="cabecalho-pagina">
+        <nav class="trilha" aria-label="Você está em"><a href="${ctx}/">Início</a><span aria-hidden="true">/</span><a href="${ctx}/admin">Administração</a></nav>
+        <h1>Administração</h1>
+    </div>
+    <%@ include file="/WEB-INF/views/includes/admin-menu.jsp" %>
+
     <h2>Categorias</h2>
 
     <c:if test="${not empty erroGeral}">
@@ -80,7 +85,7 @@
                                     <td class="acoes">
                                         <a href="${ctx}/admin/categorias?acao=editar&id=${cat.idCategoria}">Editar</a>
                                         <form method="post" action="${ctx}/admin/categorias" class="form-inline"
-                                              onsubmit="return confirm('Excluir esta categoria?');">
+                                              data-confirmar="Excluir esta categoria?">
                                             <input type="hidden" name="acao" value="excluir">
                                             <input type="hidden" name="id" value="${cat.idCategoria}">
                                             <button type="submit" class="link-perigo">Excluir</button>
@@ -94,6 +99,7 @@
             </c:otherwise>
         </c:choose>
     </c:if>
+</div>
 </main>
 
 <%@ include file="/WEB-INF/views/includes/rodape.jsp" %>

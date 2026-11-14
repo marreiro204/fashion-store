@@ -39,11 +39,34 @@ public class ProdutoService {
      * Texto de pesquisa é limitado a 100 caracteres.
      */
     public List<Produto> listarCatalogo(String busca, Integer idCategoria) {
+        return listarCatalogo(busca, idCategoria, null);
+    }
+
+    /**
+     * Catálogo com ordenação: "nome" (padrão), "menor-preco", "maior-preco"
+     * ou "novidades". Qualquer outro valor vira "nome".
+     */
+    public List<Produto> listarCatalogo(String busca, Integer idCategoria, String ordem) {
         String texto = Validador.limpar(busca);
         if (texto.length() > 100) {
             texto = texto.substring(0, 100);
         }
-        return produtoDAO.buscar(texto, idCategoria);
+        return produtoDAO.buscar(texto, idCategoria, normalizarOrdem(ordem));
+    }
+
+    /** Os produtos cadastrados mais recentemente (seção "Novidades" da página inicial). */
+    public List<Produto> listarNovidades(int quantidade) {
+        List<Produto> todos = produtoDAO.buscar(null, null, ProdutoDAO.ORDEM_NOVIDADES);
+        return todos.size() > quantidade ? todos.subList(0, quantidade) : todos;
+    }
+
+    /** Garante que só uma das ordenações conhecidas seja usada. */
+    public static String normalizarOrdem(String ordem) {
+        if (ProdutoDAO.ORDEM_MENOR_PRECO.equals(ordem) || ProdutoDAO.ORDEM_MAIOR_PRECO.equals(ordem)
+                || ProdutoDAO.ORDEM_NOVIDADES.equals(ordem)) {
+            return ordem;
+        }
+        return ProdutoDAO.ORDEM_NOME;
     }
 
     /** @return o produto com categoria e estoques, ou null se não existir */

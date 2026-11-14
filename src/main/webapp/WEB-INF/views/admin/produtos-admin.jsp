@@ -9,21 +9,25 @@
      De onde vêm os valores do formulário:
      - requisição POST (voltou com erro) -> o que foi digitado (${param.xxx});
      - GET de edição                     -> o produto do banco (${produto.xxx}). --%>
-<fmt:setLocale value="pt_BR" />
 <c:set var="reenvio" value="${pageContext.request.method == 'POST'}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produtos - Admin - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Produtos - Admin - Fashion Store</title>
+    <c:set var="areaAdmin" value="true" />
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
 
-<main class="conteudo">
-    <p><a href="${ctx}/admin">&larr; Painel administrativo</a></p>
+<main id="conteudo" class="principal">
+<div class="container">
+    <div class="cabecalho-pagina">
+        <nav class="trilha" aria-label="Você está em"><a href="${ctx}/">Início</a><span aria-hidden="true">/</span><a href="${ctx}/admin">Administração</a></nav>
+        <h1>Administração</h1>
+    </div>
+    <%@ include file="/WEB-INF/views/includes/admin-menu.jsp" %>
+
     <div class="titulo-acoes">
         <h2>Produtos</h2>
         <c:if test="${not mostrarFormulario}">
@@ -83,7 +87,7 @@
                 <input id="imagem" name="imagem" maxlength="255" placeholder="camiseta-azul.jpg ou https://..."
                        value="<c:out value='${reenvio ? param.imagem : produto.imagem}' />"
                        class="${not empty erros.imagem ? 'campo-erro' : ''}">
-                <span class="texto-suave">Nome de um arquivo da pasta assets/images/produtos/ ou um endereço de imagem.</span>
+                <span class="ajuda">Arquivo em assets/images/produtos/ (ex.: <code>masculino/camisa-social.jpg</code>) ou um endereço https://. Imagens adicionais: mesmo nome com -2, -3...</span>
                 <c:if test="${not empty erros.imagem}"><span class="msg-erro"><c:out value="${erros.imagem}" /></span></c:if>
 
                 <label for="descricao">Descrição</label>
@@ -128,7 +132,7 @@
                                         <a href="${ctx}/admin/produtos?acao=editar&id=${p.idProduto}">Editar</a>
                                         <a href="${ctx}/admin/estoque?produto=${p.idProduto}">Estoque</a>
                                         <form method="post" action="${ctx}/admin/produtos" class="form-inline"
-                                              onsubmit="return confirm('Excluir este produto? Essa ação não pode ser desfeita.');">
+                                              data-confirmar="Excluir este produto? Essa ação não pode ser desfeita.">
                                             <input type="hidden" name="acao" value="excluir">
                                             <input type="hidden" name="id" value="${p.idProduto}">
                                             <button type="submit" class="link-perigo">Excluir</button>
@@ -142,6 +146,7 @@
             </c:otherwise>
         </c:choose>
     </c:if>
+</div>
 </main>
 
 <%@ include file="/WEB-INF/views/includes/rodape.jsp" %>

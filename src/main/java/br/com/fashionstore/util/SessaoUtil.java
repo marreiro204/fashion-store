@@ -1,5 +1,6 @@
 package br.com.fashionstore.util;
 
+import br.com.fashionstore.model.Carrinho;
 import br.com.fashionstore.model.Cliente;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -18,7 +19,21 @@ public final class SessaoUtil {
     /** Mensagem exibida uma única vez na próxima página (ex.: "Cadastro realizado"). */
     public static final String MENSAGEM = "mensagem";
 
+    /** Nome do atributo com o carrinho. Nas JSPs: ${sessionScope.carrinho} */
+    public static final String CARRINHO = "carrinho";
+
     private SessaoUtil() {
+    }
+
+    /** Devolve o carrinho da sessão, criando um vazio se ainda não existir. */
+    public static Carrinho getCarrinho(HttpServletRequest request) {
+        HttpSession sessao = request.getSession(true);
+        Carrinho carrinho = (Carrinho) sessao.getAttribute(CARRINHO);
+        if (carrinho == null) {
+            carrinho = new Carrinho();
+            sessao.setAttribute(CARRINHO, carrinho);
+        }
+        return carrinho;
     }
 
     /** @return o cliente logado, ou null se ninguém estiver logado */

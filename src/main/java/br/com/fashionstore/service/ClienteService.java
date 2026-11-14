@@ -1,6 +1,8 @@
 package br.com.fashionstore.service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.com.fashionstore.dao.ClienteDAO;
@@ -113,6 +115,30 @@ public class ClienteService {
             cliente.setSenha(null);
         }
         return cliente;
+    }
+
+    /**
+     * Consulta de clientes (admin), com pesquisa opcional por nome, e-mail
+     * ou CPF. Os administradores não aparecem na lista.
+     */
+    public List<Cliente> listarClientes(String busca) {
+        String texto = Validador.limpar(busca).toLowerCase();
+        String digitos = Validador.somenteDigitos(busca);
+
+        List<Cliente> resultado = new ArrayList<>();
+        for (Cliente c : clienteDAO.listarTodos()) {
+            if (c.isAdmin()) {
+                continue;
+            }
+            boolean combina = texto.isEmpty()
+                    || c.getNome().toLowerCase().contains(texto)
+                    || c.getEmail().toLowerCase().contains(texto)
+                    || (!digitos.isEmpty() && c.getCpf().contains(digitos));
+            if (combina) {
+                resultado.add(c);
+            }
+        }
+        return resultado;
     }
 
     // ========================= Auxiliares =========================

@@ -1,15 +1,16 @@
-<%-- Tag reutilizável: mostra a imagem de um produto.
+<%-- Tag reutilizável: mostra a imagem PRINCIPAL de um produto.
      Uso: <%@ taglib prefix="fs" tagdir="/WEB-INF/tags" %>
-          <fs:imagemProduto produto="${p}" classe="card-imagem" />
+          <fs:imagemProduto produto="${p}" classe="miniatura" />
 
-     Regras:
-     - imagem vazia            -> imagem padrão (sem-imagem.svg)
-     - começa com http(s)://   -> usa o endereço como está
-     - nome de arquivo         -> procura em assets/images/produtos/
-     - arquivo não encontrado  -> o navegador troca pela imagem padrão (onerror)
+     De onde vem a imagem (campo "imagem" do cadastro do produto):
+     - vazio                    -> imagem provisória (sem-imagem.svg)
+     - começa com http(s)://    -> usa o endereço como está
+     - nome de arquivo          -> assets/images/produtos/<nome>
+                                   (pode ter subpasta: masculino/camisa.jpg)
+     - arquivo não encontrado   -> o navegador troca pela imagem provisória (onerror)
 
-     "Tag file" é um recurso padrão do JSP para não repetir o mesmo HTML
-     em várias páginas (catálogo, detalhes, admin, carrinho...). --%>
+     O tamanho e o recorte são definidos pelo CSS de quem usa a tag
+     (object-fit: cover), então qualquer foto se ajusta sem deformar. --%>
 <%@ tag pageEncoding="UTF-8" %>
 <%@ attribute name="produto" required="true" type="br.com.fashionstore.model.Produto" %>
 <%@ attribute name="classe" required="false" %>

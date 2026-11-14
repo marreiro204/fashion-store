@@ -1,0 +1,115 @@
+/* =====================================================================
+   FashionStore - PÁGINAS
+   Ajustes específicos de cada página da loja.
+   ===================================================================== */
+
+/* ---------- Catálogo (produtos.jsp) ---------- */
+.catalogo { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; }
+.filtros-lateral { position: sticky; top: 110px; }
+.filtros-lateral h4 {
+    font-family: var(--fonte-texto); font-size: 12px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; margin: 0 0 14px;
+}
+.filtros-lateral ul { list-style: none; padding: 0; margin: 0 0 32px; }
+.filtros-lateral li a {
+    display: flex; justify-content: space-between;
+    padding: 8px 0; color: var(--cinza-700); border-bottom: 1px solid var(--cinza-200);
+}
+.filtros-lateral li a:hover, .filtros-lateral li a.ativo { color: var(--preto); }
+.filtros-lateral li a.ativo { font-weight: 600; }
+
+.barra-catalogo {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    padding-bottom: 20px; margin-bottom: 28px; border-bottom: 1px solid var(--cinza-200);
+}
+.barra-catalogo .busca { display: flex; gap: 10px; flex: 1; max-width: 520px; }
+.barra-catalogo .busca .campo { flex: 1; }
+.barra-catalogo .ordenar { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--cinza-500); }
+.barra-catalogo .ordenar .campo { width: auto; min-width: 190px; }
+.filtros-ativos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: -12px 0 24px; font-size: 14px; }
+
+/* ---------- Detalhe do produto (produto.jsp) ---------- */
+.produto-detalhe { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+.produto-info { position: sticky; top: 110px; }
+.produto-info .card-produto-categoria { display: inline-block; margin-bottom: 10px; }
+.produto-info h1 { font-size: 42px; margin-bottom: 14px; }
+.produto-preco { font-size: 24px; margin: 0 0 28px; }
+.produto-info .rotulo { margin-top: 0; }
+.bloco-compra { padding: 26px 0; border-top: 1px solid var(--cinza-200); border-bottom: 1px solid var(--cinza-200); margin-bottom: 26px; }
+.bloco-compra fieldset { border: none; padding: 0; margin: 0 0 22px; }
+.bloco-compra legend { font-size: 13px; font-weight: 600; margin-bottom: 10px; padding: 0; }
+.linha-compra { display: flex; gap: 12px; align-items: stretch; }
+.linha-compra .botao { flex: 1; }
+.produto-descricao { white-space: pre-line; color: var(--cinza-700); }
+.produto-garantias { list-style: none; padding: 0; margin: 22px 0 0; font-size: 14px; color: var(--cinza-500); }
+.produto-garantias li { padding: 6px 0; }
+
+/* ---------- Carrinho e finalização ---------- */
+.compra { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; align-items: start; }
+.resumo { position: sticky; top: 110px; }
+.resumo h3 { margin-bottom: 20px; }
+.resumo-linha { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; }
+.resumo-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 18px 0 22px; margin-top: 10px; border-top: 1px solid var(--cinza-200);
+    font-size: 15px;
+}
+.resumo-total strong { font-family: var(--fonte-titulo); font-size: 30px; font-weight: 400; }
+.resumo .botao + .botao { margin-top: 10px; }
+
+.item-carrinho {
+    display: grid; grid-template-columns: 96px 1fr auto auto; gap: 24px; align-items: center;
+    padding: 22px 0; border-bottom: 1px solid var(--cinza-200);
+}
+.item-carrinho:first-child { padding-top: 0; }
+.item-carrinho .miniatura { width: 96px; height: 128px; }
+.item-carrinho-nome { font-size: 16px; font-weight: 500; }
+.item-carrinho-detalhe { font-size: 14px; color: var(--cinza-500); margin-top: 4px; }
+.item-carrinho-subtotal { min-width: 110px; text-align: right; font-weight: 500; }
+.form-quantidade { display: flex; align-items: center; gap: 8px; margin: 0; }
+.acoes-lista { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+
+.opcao-endereco {
+    display: flex; gap: 14px; align-items: flex-start; cursor: pointer;
+    padding: 16px 18px; border: 1px solid var(--cinza-300); border-radius: var(--raio);
+    background: var(--branco); margin-bottom: 12px; transition: border-color var(--transicao);
+}
+.opcao-endereco:hover { border-color: var(--preto); }
+.opcao-endereco input { margin-top: 4px; accent-color: var(--preto); }
+.opcao-endereco:has(input:checked) { border-color: var(--preto); box-shadow: 0 0 0 1px var(--preto); }
+
+.itens-resumo { list-style: none; padding: 0; margin: 0 0 6px; }
+.itens-resumo li { display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 10px 0; font-size: 14px; }
+
+/* ---------- Conta do cliente (perfil e pedidos) ---------- */
+.conta { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; }
+.conta-menu { list-style: none; padding: 0; margin: 0; position: sticky; top: 110px; }
+.conta-menu a, .conta-menu button {
+    display: block; width: 100%; text-align: left; padding: 12px 0;
+    border: none; border-bottom: 1px solid var(--cinza-200); background: none; cursor: pointer;
+    color: var(--cinza-700); font-size: 15px;
+}
+.conta-menu a.ativo { color: var(--preto); font-weight: 600; }
+.conta-menu a:hover, .conta-menu button:hover { color: var(--preto); }
+.cabecalho-pedido { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.cabecalho-pedido h2 { margin: 0; }
+
+/* ---------- Entrar e cadastro ---------- */
+.acesso { display: flex; justify-content: center; padding: 56px 0 24px; }
+.acesso-cartao { width: 100%; max-width: 460px; }
+.acesso-cartao.largo { max-width: 860px; }
+.acesso-marca { width: 64px; margin: 0 auto 18px; }
+.acesso-cartao h1 { text-align: center; font-size: 38px; margin-bottom: 6px; }
+.acesso-cartao .subtitulo { text-align: center; color: var(--cinza-500); margin-bottom: 26px; }
+.acesso-rodape { text-align: center; margin-top: 22px; font-size: 14px; color: var(--cinza-500); }
+.acesso-rodape a { color: var(--preto); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Páginas de erro ---------- */
+.pagina-erro { text-align: center; padding: 96px 0 40px; }
+.pagina-erro .codigo { font-family: var(--fonte-titulo); font-size: 120px; line-height: 1; margin-bottom: 10px; }
+.pagina-erro p { color: var(--cinza-500); margin-bottom: 28px; }
+
+.painel-pedido { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.painel-pedido .cartao + .cartao { margin-top: 0; }
+.painel-pedido .resumo-total { border-top: none; margin: 0; padding: 0; }
+.compra > .cartao + .cartao { margin-top: 0; }   /* lado a lado: sem espaço extra em cima */

@@ -67,6 +67,7 @@ public class TesteProdutosCategorias {
         final List<Integer> vendidos = new ArrayList<>();
         String ultimaBusca;
         Integer ultimaCategoria;
+        String ultimaOrdem;
 
         @Override
         public Produto inserir(Produto p) {
@@ -89,9 +90,10 @@ public class TesteProdutosCategorias {
         }
 
         @Override
-        public List<Produto> buscar(String texto, Integer idCategoria) {
+        public List<Produto> buscar(String texto, Integer idCategoria, String ordem) {
             ultimaBusca = texto;
             ultimaCategoria = idCategoria;
+            ultimaOrdem = ordem;
             return lista;
         }
     }
@@ -114,6 +116,14 @@ public class TesteProdutosCategorias {
         verificar("Imagem '../../web.xml' é recusada", !Validador.imagemValida("../../web.xml"));
         verificar("Imagem 'arquivo.exe' é recusada", !Validador.imagemValida("arquivo.exe"));
         verificar("Id 'abc' vira null (sem erro)", Validador.converterInteiro("abc") == null);
+        verificar("Imagem em subpasta 'masculino/camisa.jpg' é aceita", Validador.imagemValida("masculino/camisa.jpg"));
+        verificar("Imagem 'feminino/vestido-midi-2.webp' é aceita", Validador.imagemValida("feminino/vestido-midi-2.webp"));
+        verificar("Duas subpastas 'a/b/c.jpg' são recusadas", !Validador.imagemValida("a/b/c.jpg"));
+        verificar("Subpasta '../x.jpg' é recusada", !Validador.imagemValida("../x.jpg"));
+        verificar("Subpasta '..masculino/x.jpg' é recusada", !Validador.imagemValida("..masculino/x.jpg"));
+        verificar("Slug de 'Calças Jeans' = 'calcas-jeans'", "calcas-jeans".equals(new Categoria("Calças Jeans", null).getSlug()));
+        verificar("Slug de ' Moda Íntima & Praia ' = 'moda-intima-praia'",
+                "moda-intima-praia".equals(new Categoria(" Moda Íntima & Praia ", null).getSlug()));
 
         // ---------------- Categorias ----------------
         System.out.println("-- Categorias");
@@ -171,6 +181,13 @@ public class TesteProdutosCategorias {
                 "jeans".equals(produtoDAO.ultimaBusca) && Integer.valueOf(2).equals(produtoDAO.ultimaCategoria));
         produtos.listarCatalogo("x".repeat(500), null);
         verificar("Pesquisa muito longa é cortada em 100 caracteres", produtoDAO.ultimaBusca.length() == 100);
+        verificar("Sem ordem informada, ordena por nome", "nome".equals(produtoDAO.ultimaOrdem));
+        produtos.listarCatalogo(null, null, "menor-preco");
+        verificar("Ordem 'menor-preco' é repassada", "menor-preco".equals(produtoDAO.ultimaOrdem));
+        produtos.listarCatalogo(null, null, "DROP TABLE produto");
+        verificar("Ordem desconhecida vira 'nome' (nunca vai ao SQL)", "nome".equals(produtoDAO.ultimaOrdem));
+        produtos.listarNovidades(8);
+        verificar("Novidades usam a ordem 'novidades'", "novidades".equals(produtoDAO.ultimaOrdem));
 
         produtoDAO.vendidos.add(camiseta.getIdProduto());
         verificar("Excluir produto já vendido é recusado (mensagem amigável)",

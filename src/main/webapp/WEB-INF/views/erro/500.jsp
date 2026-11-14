@@ -1,18 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
-<%-- Não exibimos a exceção para o usuário (segurança).
-     O detalhe técnico fica no log do Tomcat (pasta logs/). --%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Página de erro 500 (configurada no web.xml).
+     Nunca mostramos detalhes técnicos ao usuário: eles ficam no log do Tomcat. --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Erro interno - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Algo deu errado - Fashion Store</title>
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
-<main class="conteudo">
-    <h2>500 - Ocorreu um erro inesperado</h2>
-    <p>Tente novamente em alguns instantes.</p>
-    <p><a class="botao" href="${pageContext.request.contextPath}/">Voltar ao início</a></p>
+<%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
+
+<main id="conteudo" class="principal">
+    <div class="container pagina-erro">
+        <div class="codigo">500</div>
+        <h1>Algo deu errado</h1>
+        <p>Ocorreu um erro inesperado. Tente novamente em instantes.</p>
+        <div class="acoes-formulario acoes-centro">
+            <a class="botao" href="${ctx}/">Voltar ao início</a>
+            <a class="botao botao-secundario" href="${ctx}/produtos">Ver produtos</a>
+        </div>
+    </div>
 </main>
+
+<%@ include file="/WEB-INF/views/includes/rodape.jsp" %>
 </body>
 </html>

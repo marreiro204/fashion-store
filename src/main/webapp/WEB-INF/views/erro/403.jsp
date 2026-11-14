@@ -1,16 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Página de erro 403 (configurada no web.xml).
+     Nunca mostramos detalhes técnicos ao usuário: eles ficam no log do Tomcat. --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Acesso negado - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Acesso negado - Fashion Store</title>
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
-<main class="conteudo">
-    <h2>403 - Acesso negado</h2>
-    <p>Você não tem permissão para acessar esta página.</p>
-    <p><a class="botao" href="${pageContext.request.contextPath}/">Voltar ao início</a></p>
+<%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
+
+<main id="conteudo" class="principal">
+    <div class="container pagina-erro">
+        <div class="codigo">403</div>
+        <h1>Acesso negado</h1>
+        <p>Você não tem permissão para acessar esta página.</p>
+        <div class="acoes-formulario acoes-centro">
+            <a class="botao" href="${ctx}/">Voltar ao início</a>
+            <a class="botao botao-secundario" href="${ctx}/produtos">Ver produtos</a>
+        </div>
+    </div>
 </main>
+
+<%@ include file="/WEB-INF/views/includes/rodape.jsp" %>
 </body>
 </html>

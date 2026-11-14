@@ -10,21 +10,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estoque - Admin - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Estoque - Admin - Fashion Store</title>
+    <c:set var="areaAdmin" value="true" />
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
 
-<main class="conteudo">
+<main id="conteudo" class="principal">
+<div class="container">
+    <div class="cabecalho-pagina">
+        <nav class="trilha" aria-label="Você está em"><a href="${ctx}/">Início</a><span aria-hidden="true">/</span><a href="${ctx}/admin">Administração</a></nav>
+        <h1>Administração</h1>
+    </div>
+    <%@ include file="/WEB-INF/views/includes/admin-menu.jsp" %>
+
     <c:choose>
         <c:when test="${not empty produto}">
-            <p><a href="${ctx}/admin/estoque">&larr; Estoque de todos os produtos</a></p>
+            <p><a class="texto-suave" href="${ctx}/admin/estoque">&larr; Estoque de todos os produtos</a></p>
         </c:when>
         <c:otherwise>
-            <p><a href="${ctx}/admin">&larr; Painel administrativo</a></p>
         </c:otherwise>
     </c:choose>
 
@@ -114,7 +119,7 @@
                                         </td>
                                         <td class="acoes">
                                             <form method="post" action="${ctx}/admin/estoque" class="form-inline"
-                                                  onsubmit="return confirm('Remover o tamanho deste produto?');">
+                                                  data-confirmar="Remover o tamanho deste produto?">
                                                 <input type="hidden" name="acao" value="remover">
                                                 <input type="hidden" name="idEstoque" value="${e.idEstoque}">
                                                 <input type="hidden" name="produto" value="${produto.idProduto}">
@@ -172,6 +177,7 @@
             </c:choose>
         </c:when>
     </c:choose>
+</div>
 </main>
 
 <%@ include file="/WEB-INF/views/includes/rodape.jsp" %>

@@ -12,10 +12,9 @@
 
     <display-name>FashionStore</display-name>
 
-    <!-- Página aberta ao acessar http://localhost:8080/FashionStore/ -->
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+    <!-- A página inicial (http://localhost:8080/FashionStore/) é atendida pelo
+         HomeServlet (@WebServlet("")), que carrega banners, categorias e novidades.
+         Por isso não há mais welcome-file / index.jsp na raiz. -->
 
     <!-- Lê os formulários (POST) e responde em UTF-8: acentos corretos -->
     <request-character-encoding>UTF-8</request-character-encoding>

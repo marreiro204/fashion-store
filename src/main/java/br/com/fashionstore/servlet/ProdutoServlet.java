@@ -1,12 +1,15 @@
 package br.com.fashionstore.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.fashionstore.dao.DAOException;
 import br.com.fashionstore.model.Produto;
 import br.com.fashionstore.service.CategoriaService;
 import br.com.fashionstore.service.ProdutoService;
 import br.com.fashionstore.service.ValidacaoException;
+import br.com.fashionstore.util.ImagemUtil;
 import br.com.fashionstore.util.SessaoUtil;
 import br.com.fashionstore.util.Validador;
 import jakarta.servlet.ServletException;
@@ -79,8 +82,10 @@ public class ProdutoServlet extends HttpServlet {
         String busca = request.getParameter("busca");
         Integer idCategoria = Validador.converterInteiro(request.getParameter("categoria"));
         request.setAttribute("categoriaSelecionada", idCategoria);
+        String ordem = ProdutoService.normalizarOrdem(request.getParameter("ordem"));
+        request.setAttribute("ordem", ordem);
         try {
-            request.setAttribute("produtos", produtoService.listarCatalogo(busca, idCategoria));
+            request.setAttribute("produtos", produtoService.listarCatalogo(busca, idCategoria, ordem));
             request.setAttribute("categorias", categoriaService.listar());
         } catch (DAOException e) {
             log("Erro de banco no catálogo", e);
@@ -104,6 +109,16 @@ public class ProdutoServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("produto", produto);
+            // Imagem principal + adicionais (nome-2.jpg, nome-3.jpg...) encontradas na pasta.
+            request.setAttribute("imagensProduto", ImagemUtil.imagensProduto(getServletContext(), produto.getImagem()));
+            // "Você também pode gostar": outros produtos da mesma categoria (até 4).
+            List<Produto> relacionados = new ArrayList<>();
+            for (Produto p : produtoService.listarCatalogo(null, produto.getCategoria().getIdCategoria())) {
+                if (p.getIdProduto() != produto.getIdProduto() && relacionados.size() < 4) {
+                    relacionados.add(p);
+                }
+            }
+            request.setAttribute("relacionados", relacionados);
         } catch (DAOException e) {
             log("Erro de banco no detalhe do produto", e);
             request.setAttribute("erroGeral", ERRO_BANCO);

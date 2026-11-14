@@ -55,6 +55,20 @@ public class Categoria implements Serializable {
         this.descricao = descricao;
     }
 
+    /**
+     * Nome "limpo" para usar em nomes de arquivo e endereços:
+     * "Calças Jeans" -> "calcas-jeans". É assim que a imagem da categoria
+     * é encontrada: assets/images/categorias/calcas-jeans.jpg
+     */
+    public String getSlug() {
+        if (nome == null) {
+            return "";
+        }
+        String semAcento = java.text.Normalizer.normalize(nome, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return semAcento.toLowerCase().trim().replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
+    }
+
     @Override
     public String toString() {
         return "Categoria{id=" + idCategoria + ", nome='" + nome + "'}";

@@ -42,21 +42,24 @@ FashionStore/
 ├── .vscode/tasks.json              tarefas do VS Code (build, deploy, Tomcat, testes)
 └── src/
     ├── main/java/br/com/fashionstore/
-    │   ├── model/      entidades: Cliente, Endereco, Categoria, Produto, Estoque, Pedido, ItemPedido
+    │   ├── model/      entidades: Cliente, Endereco, Categoria, Produto, Estoque, Pedido, ItemPedido (+ Carrinho, na sessão)
     │   ├── dao/        acesso ao banco (JDBC + PreparedStatement + transações)
     │   ├── service/    regras de negócio e validações
-    │   ├── servlet/    controllers (Login, Cliente, Produto, Categoria, Estoque, Admin)
-    │   ├── filter/     ControleAcessoFilter (login e perfil ADMIN)
-    │   └── util/       ConnectionFactory, SenhaUtil (BCrypt), Validador, SessaoUtil
+    │   ├── servlet/    controllers (Home, Login, Cliente, Produto, Categoria, Estoque, Carrinho, Pedido, Admin)
+    │   ├── filter/     ControleAcessoFilter (login e perfil ADMIN), MenuFilter (categorias do menu)
+    │   └── util/       ConnectionFactory, SenhaUtil (BCrypt), Validador, SessaoUtil, ImagemUtil
     ├── main/resources/
     │   └── db.properties.example   modelo da configuração do banco
     ├── main/webapp/
-    │   ├── index.jsp
-    │   ├── assets/     css, images (images/produtos/ = fotos dos produtos), js
+    │   ├── assets/
+    │   │   ├── css/    base, layout, componentes, paginas, admin
+    │   │   ├── js/     site.js (carrossel, galeria, busca, quantidade, confirmações)
+    │   │   └── images/ marca/, banners/, categorias/, produtos/ (ver "Imagens")
     │   └── WEB-INF/
     │       ├── web.xml
-    │       ├── tags/   tag reutilizável da imagem do produto
-    │       └── views/  JSPs (cliente/, produto/, admin/, includes/, erro/)
+    │       ├── tags/   componentes: cardProduto, imagemProduto, icone
+    │       └── views/  JSPs: index.jsp, cliente/, produto/, carrinho/, pedido/, admin/, erro/
+    │                   includes/ (head, cabecalho, rodape, conta-menu, admin-menu)
     └── test/java/      testes executáveis (não vão para o WAR)
 ```
 
@@ -124,8 +127,10 @@ Cada teste é uma classe com `main` em `src/test/java`, executada pelas tarefas 
 |---|---|---|
 | Teste: classes Model | Não | 30 |
 | Teste: autenticação | Não | 37 |
-| Teste: produtos e categorias | Não | 37 |
+| Teste: produtos e categorias | Não | 48 |
 | Teste: estoque | Não | 30 |
+| Teste: carrinho e pedidos | Não | 47 |
+| Teste: administração | Não | 41 |
 | Teste: conexão com o banco | **Sim** | conexão |
 | Teste: DAOs (CRUD) | **Sim** | 41 (apaga os dados de teste no final) |
 
@@ -137,19 +142,82 @@ Os testes sem banco usam DAOs "falsos" em memória para validar as regras de neg
 
 | URL | Acesso | Descrição |
 |---|---|---|
-| `/` | Público | Página inicial |
-| `/produtos?busca=&categoria=` | Público | Catálogo com pesquisa e filtro por categoria |
-| `/produto?id=` | Público | Detalhes e tamanhos do produto |
+| `/` | Público | Página inicial: banners, categorias e novidades |
+| `/produtos?busca=&categoria=&ordem=` | Público | Catálogo com pesquisa, filtro por categoria e ordenação (`nome`, `novidades`, `menor-preco`, `maior-preco`) |
+| `/produto?id=` | Público | Detalhes, galeria de imagens, tamanhos e "você também pode gostar" |
 | `/cadastro`, `/login` | Público | Cadastro (com endereço) e login |
 | `/logout` (POST) | Logado | Sair |
+| `/carrinho` | Público | Carrinho (fica na sessão; adicionar, alterar, remover, esvaziar) |
+| `/pedido` | Cliente logado | Finalização: resumo atualizado e endereço de entrega |
+| `/pedidos`, `/pedidos?id=` | Cliente logado | Histórico de compras e detalhes (só os próprios pedidos) |
 | `/perfil` | Cliente logado | Dados do cliente e endereços |
-| `/admin` | ADMIN | Painel administrativo |
+| `/admin` | ADMIN | Painel: pedidos a processar, faturamento, pedidos por status, alertas de estoque |
+| `/admin/pedidos?status=`, `/admin/pedidos?id=` | ADMIN | Consulta de pedidos e atualização de status |
+| `/admin/clientes?busca=`, `/admin/clientes?id=` | ADMIN | Consulta de clientes (dados, endereços e pedidos) |
 | `/admin/produtos` | ADMIN | CRUD de produtos |
 | `/admin/categorias` | ADMIN | CRUD de categorias |
 | `/admin/estoque` | ADMIN | Estoque por tamanho |
 
 Não há como virar administrador pelo site: o cadastro público sempre cria o perfil `CLIENTE`.
 O perfil `ADMIN` é definido direto no banco.
+
+**Status dos pedidos** (o admin não pode pular nem voltar etapas):
+
+```
+PENDENTE ──> PAGO ──> ENVIADO ──> ENTREGUE
+   │           │
+   └───────────┴──> CANCELADO   (as peças voltam automaticamente para o estoque)
+```
+
+---
+
+## Imagens
+
+Todas as imagens ficam em `src/main/webapp/assets/images/`. **Basta colocar o arquivo na
+pasta certa, com o nome certo**: nenhum HTML, CSS ou tabela precisa mudar. Enquanto não
+houver foto, o site mostra uma imagem provisória no mesmo lugar e no mesmo tamanho.
+
+| Pasta | O que vai nela | Nome do arquivo | Tamanho recomendado |
+|---|---|---|---|
+| `marca/` | Logo (já está pronta) | `logo.png`, `logo-texto.png`, `monograma.png` e versões `-branca` | — |
+| `banners/` | Fotos do banner da página inicial (cada foto = 1 slide) | `banner-1.jpg`, `banner-2.jpg`... (ordem alfabética) | 1920 × 700 px, horizontal |
+| `categorias/` | Foto do card de cada categoria | o nome da categoria sem acento, minúsculo, com hífens: `masculino.jpg`, `calcas-jeans.jpg` | 1400 × 480 px, horizontal |
+| `produtos/masculino/`, `produtos/feminino/`, `produtos/unissex/` | Fotos dos produtos | livre, sem espaços nem acentos: `camisa-social-branca.jpg` | 900 × 1200 px, vertical (3:4) |
+
+Formatos aceitos: **.jpg, .jpeg, .png e .webp**.
+
+### Como associar uma foto a um produto
+
+1. Copie a foto para a pasta, por exemplo `produtos/masculino/camisa-social-branca.jpg`.
+2. No painel admin, em **Produtos → Editar**, preencha o campo **Imagem** com
+   `masculino/camisa-social-branca.jpg` (o caminho a partir de `produtos/`) e salve.
+3. Gere e publique o projeto (`Ctrl+Shift+B`).
+
+### Imagens adicionais de um produto (galeria)
+
+Use o **mesmo nome** da imagem principal com `-2`, `-3`... no final, até `-8`:
+
+```
+produtos/masculino/camisa-social-branca.jpg     <- principal (a do cadastro)
+produtos/masculino/camisa-social-branca-2.jpg   <- aparece na galeria
+produtos/masculino/camisa-social-branca-3.jpg   <- aparece na galeria
+```
+
+A página do produto encontra as adicionais sozinha. Não é preciso cadastrar nada.
+
+### Substituir uma imagem provisória
+
+Não há imagens provisórias fixas no código. Os espaços vazios mostram `sem-imagem.svg`
+(produtos) ou um fundo neutro com o monograma (banner e categorias). Assim que o arquivo
+com o nome certo é colocado na pasta, ele aparece no lugar.
+
+### Para não comprometer o layout
+
+- Todas as molduras têm **proporção fixa** e recortam a foto **sem deformar** (`object-fit: cover`).
+  Uma foto em outro formato só é recortada nas bordas.
+- Prefira as proporções da tabela e deixe o assunto principal **no centro/topo** da foto.
+- Use nomes **sem espaços, acentos ou maiúsculas** (o Linux diferencia `Foto.JPG` de `foto.jpg`).
+- Fotos de até ~300 KB deixam o site rápido (exporte em qualidade 80% no editor de imagens).
 
 ---
 
@@ -199,9 +267,9 @@ Assim, Web e Mobile seguem exatamente as mesmas regras de negócio.
 | 4 | Cadastro, login, sessão e proteção de páginas | ✅ |
 | 5 | Produtos, categorias, catálogo, pesquisa e filtro | ✅ |
 | 6 | Estoque por tamanho | ✅ |
-| 7 | Carrinho e pedidos | ⏳ |
-| 8 | Área administrativa (clientes e pedidos) | ⏳ |
-| 9 | Interface (identidade visual) | ⏳ |
+| 7 | Carrinho e pedidos | ✅ |
+| 8 | Área administrativa (painel, clientes e pedidos) | ✅ |
+| 9 | Interface (identidade visual) | ✅ |
 | 10 | Testes finais e preparação para o Flutter | ⏳ |
 
 ---

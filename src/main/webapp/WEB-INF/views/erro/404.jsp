@@ -1,16 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Página de erro 404 (configurada no web.xml).
+     Nunca mostramos detalhes técnicos ao usuário: eles ficam no log do Tomcat. --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Página não encontrada - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Página não encontrada - Fashion Store</title>
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
-<main class="conteudo">
-    <h2>404 - Página não encontrada</h2>
-    <p>O endereço acessado não existe.</p>
-    <p><a class="botao" href="${pageContext.request.contextPath}/">Voltar ao início</a></p>
+<%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
+
+<main id="conteudo" class="principal">
+    <div class="container pagina-erro">
+        <div class="codigo">404</div>
+        <h1>Página não encontrada</h1>
+        <p>O endereço acessado não existe ou foi removido.</p>
+        <div class="acoes-formulario acoes-centro">
+            <a class="botao" href="${ctx}/">Voltar ao início</a>
+            <a class="botao botao-secundario" href="${ctx}/produtos">Ver produtos</a>
+        </div>
+    </div>
 </main>
+
+<%@ include file="/WEB-INF/views/includes/rodape.jsp" %>
 </body>
 </html>

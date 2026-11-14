@@ -6,8 +6,10 @@ import br.com.fashionstore.dao.DAOException;
 import br.com.fashionstore.model.Cliente;
 import br.com.fashionstore.model.Endereco;
 import br.com.fashionstore.service.ClienteService;
+import br.com.fashionstore.service.PedidoService;
 import br.com.fashionstore.service.ValidacaoException;
 import br.com.fashionstore.util.SessaoUtil;
+import br.com.fashionstore.util.Validador;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,15 +22,21 @@ import jakarta.servlet.http.HttpServletResponse;
  *   GET  /cadastro -> formulário de cadastro
  *   POST /cadastro -> cadastra e já faz o login
  *   GET  /perfil   -> dados do cliente logado (página protegida pelo filtro)
+ *
+ * Área administrativa (só ADMIN):
+ *   GET  /admin/clientes?busca=ana -> consulta de clientes
+ *   GET  /admin/clientes?id=3      -> dados, endereços e pedidos de um cliente
  */
-@WebServlet(urlPatterns = {"/cadastro", "/perfil"})
+@WebServlet(urlPatterns = {"/cadastro", "/perfil", "/admin/clientes"})
 public class ClienteServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static final String VIEW_CADASTRO = "/WEB-INF/views/cliente/cadastro.jsp";
     private static final String VIEW_PERFIL = "/WEB-INF/views/cliente/perfil.jsp";
+    private static final String VIEW_ADMIN = "/WEB-INF/views/admin/clientes-admin.jsp";
 
     private final ClienteService clienteService = new ClienteService();
+    private final PedidoService pedidoService = new PedidoService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,6 +44,10 @@ public class ClienteServlet extends HttpServlet {
 
         if ("/perfil".equals(request.getServletPath())) {
             mostrarPerfil(request, response);
+            return;
+        }
+        if ("/admin/clientes".equals(request.getServletPath())) {
+            adminClientes(request, response);
             return;
         }
 
@@ -94,6 +106,32 @@ public class ClienteServlet extends HttpServlet {
                     "Não foi possível concluir o cadastro agora. Tente novamente em instantes.");
             request.getRequestDispatcher(VIEW_CADASTRO).forward(request, response);
         }
+    }
+
+    /** Consulta de clientes (lista com pesquisa, ou detalhes de um cliente). */
+    private void adminClientes(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String idTexto = request.getParameter("id");
+        try {
+            if (idTexto != null) {
+                Integer id = Validador.converterInteiro(idTexto);
+                Cliente cliente = id == null ? null : clienteService.buscarPerfil(id);
+                if (cliente == null) {
+                    SessaoUtil.mensagem(request, "Cliente não encontrado.");
+                    response.sendRedirect(request.getContextPath() + "/admin/clientes");
+                    return;
+                }
+                request.setAttribute("cliente", cliente);
+                request.setAttribute("pedidos", pedidoService.listarHistorico(id));
+            } else {
+                request.setAttribute("clientes", clienteService.listarClientes(request.getParameter("busca")));
+            }
+        } catch (DAOException e) {
+            log("Erro de banco na consulta de clientes", e);
+            request.setAttribute("erroGeral", "Não foi possível acessar o banco de dados agora. Tente novamente em instantes.");
+        }
+        request.getRequestDispatcher(VIEW_ADMIN).forward(request, response);
     }
 
     private void mostrarPerfil(HttpServletRequest request, HttpServletResponse response)

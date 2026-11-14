@@ -1,0 +1,81 @@
+/* =====================================================================
+   FashionStore - ÁREA ADMINISTRATIVA
+   Mesma identidade visual da loja, com navegação própria.
+   ===================================================================== */
+
+.admin-menu {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    padding: 6px; margin-bottom: 32px;
+    background: var(--branco); border: 1px solid var(--cinza-200); border-radius: var(--raio);
+}
+.admin-menu a {
+    padding: 10px 18px; border-radius: var(--raio-pequeno);
+    font-size: 14px; font-weight: 500; color: var(--cinza-700);
+}
+.admin-menu a:hover { background: var(--cinza-100); color: var(--preto); }
+.admin-menu a.ativo { background: var(--preto); color: var(--branco); }
+
+.titulo-acoes { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.titulo-acoes h2, .titulo-acoes h3 { margin: 0; }
+
+/* Números do painel */
+.grade-numeros { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.numero {
+    display: flex; flex-direction: column; gap: 6px; padding: 22px;
+    background: var(--branco); border: 1px solid var(--cinza-200); border-radius: var(--raio);
+    color: var(--preto);
+}
+a.numero:hover { border-color: var(--preto); color: var(--preto); }
+.numero-valor { font-family: var(--fonte-titulo); font-size: 34px; line-height: 1.1; }
+.numero-rotulo { font-size: 13px; color: var(--cinza-500); }
+
+.painel-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.painel-colunas .cartao { margin: 0; }
+.lista-status { list-style: none; padding: 0; margin: 0; }
+.lista-status li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--cinza-200); }
+.lista-status li:last-child { border-bottom: none; }
+
+.grade-atalhos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.atalho { display: block; padding: 22px; background: var(--branco); border: 1px solid var(--cinza-200); border-radius: var(--raio); }
+.atalho h4 { margin-bottom: 4px; }
+.atalho p { margin: 0; font-size: 13px; color: var(--cinza-500); }
+.atalho:hover { border-color: var(--preto); color: var(--preto); }
+
+/* Filtros por status (pílulas) */
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.filtro {
+    padding: 7px 16px; border: 1px solid var(--cinza-300); border-radius: 20px;
+    background: var(--branco); font-size: 14px; color: var(--cinza-700);
+}
+.filtro:hover { border-color: var(--preto); color: var(--preto); }
+.filtro-ativo, .filtro-ativo:hover { background: var(--preto); border-color: var(--preto); color: var(--branco); }
+
+.barra-admin { display: flex; gap: 10px; margin-bottom: 20px; max-width: 560px; }
+.barra-admin .campo { flex: 1; }
+
+.form-linha { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.form-linha > div { flex: 1 1 180px; }
+.form-linha label { margin-top: 0; }
+.form-quantidade-admin { display: flex; gap: 8px; align-items: center; margin: 0; }
+.form-quantidade-admin .campo { width: 100px; min-height: 38px; }
+
+.titulo-produto-estoque { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.titulo-produto-estoque h2 { margin: 0; }
+.legenda { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--cinza-500); margin-bottom: 16px; }
+.tabela .selo { margin: 2px 4px 2px 0; }
+
+/* ---------- Compatibilidade com as telas do admin ---------- */
+.cartao-largo { margin-bottom: 24px; }
+.barra-busca { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px; max-width: 620px; }
+.barra-busca input {
+    flex: 1; min-height: 46px; padding: 10px 14px;
+    border: 1px solid var(--cinza-300); border-radius: var(--raio-pequeno); background: var(--branco);
+}
+.link-limpar { font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.form-linha-botao { flex: 0 0 auto !important; }
+.form-quantidade input[type="number"] {
+    width: 96px; min-height: 38px; padding: 6px 10px;
+    border: 1px solid var(--cinza-300); border-radius: var(--raio-pequeno); background: var(--branco);
+}
+.total { text-align: right; font-size: 18px; margin-top: 18px; }
+.total strong { font-family: var(--fonte-titulo); font-size: 26px; font-weight: 400; }

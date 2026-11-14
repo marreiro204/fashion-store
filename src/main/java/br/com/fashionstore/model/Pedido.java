@@ -58,6 +58,17 @@ public class Pedido implements Serializable {
         return total;
     }
 
+    /**
+     * Data no formato brasileiro: "14/11/2026 15:30".
+     * (A tag fmt:formatDate do JSTL não aceita LocalDateTime, por isso o método.)
+     */
+    public String getDataFormatada() {
+        return dataPedido == null ? "" : dataPedido.format(FORMATO_DATA);
+    }
+
+    private static final java.time.format.DateTimeFormatter FORMATO_DATA =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     /** Quantidade total de peças do pedido. */
     public int getQuantidadeItens() {
         int total = 0;
@@ -75,6 +86,10 @@ public class Pedido implements Serializable {
         if (status.isFinal()) {
             throw new IllegalStateException("O pedido já está " + status.getDescricao()
                     + " e não pode mais ser alterado.");
+        }
+        if (!status.podeMudarPara(novoStatus)) {
+            throw new IllegalStateException("Não é possível mudar de " + status.getDescricao()
+                    + " para " + novoStatus.getDescricao() + ".");
         }
         this.status = novoStatus;
     }

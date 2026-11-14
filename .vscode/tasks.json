@@ -62,6 +62,20 @@
             "problemMatcher": []
         },
         {
+            "label": "Teste: carrinho e pedidos",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.service.TesteCarrinhoPedidos }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Teste: administração",
+            "type": "shell",
+            "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.service.TesteAdministracao }",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
             "label": "Teste: conexão com o banco",
             "type": "shell",
             "command": ". ./.vscode/ambiente.ps1; [Console]::OutputEncoding = [Text.Encoding]::UTF8; mvn -q test-compile dependency:build-classpath '-Dmdep.outputFile=target/cp.txt'; if ($LASTEXITCODE -eq 0) { java '-Dstdout.encoding=UTF-8' -cp ('target/classes;target/test-classes;' + (Get-Content target/cp.txt -Raw).Trim()) br.com.fashionstore.dao.TesteConexao }",

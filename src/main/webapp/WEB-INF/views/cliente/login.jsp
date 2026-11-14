@@ -1,40 +1,44 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Login. Envia POST /login (email, senha e a página de retorno "redirect"). --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar - FashionStore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <title>Entrar - Fashion Store</title>
+    <%@ include file="/WEB-INF/views/includes/head.jsp" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/includes/cabecalho.jsp" %>
 
-<main class="conteudo">
-    <div class="cartao cartao-estreito">
-        <h2>Entrar</h2>
+<main id="conteudo" class="principal">
+    <div class="container acesso">
+        <div class="cartao acesso-cartao">
+            <img class="acesso-marca" src="${ctx}/assets/images/marca/monograma.png" alt="">
+            <h1>Entrar</h1>
+            <p class="subtitulo">Acesse sua conta para finalizar compras e acompanhar pedidos.</p>
 
-        <c:if test="${not empty erro}">
-            <div class="alerta alerta-erro"><c:out value="${erro}" /></div>
-        </c:if>
+            <c:if test="${not empty erro}">
+                <div class="alerta alerta-erro"><c:out value="${erro}" /></div>
+            </c:if>
 
-        <form method="post" action="${ctx}/login" class="formulario" novalidate>
-            <%-- Página que o usuário tentou abrir antes de fazer login --%>
-            <input type="hidden" name="redirect" value="<c:out value='${param.redirect}' />">
+            <form method="post" action="${ctx}/login" class="formulario" novalidate>
+                <%-- Página que o usuário tentou abrir antes do login --%>
+                <input type="hidden" name="redirect" value="<c:out value='${param.redirect}' />">
 
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" maxlength="150" required autofocus
-                   autocomplete="username" value="<c:out value='${param.email}' />">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" maxlength="150" required autofocus
+                       autocomplete="username" value="<c:out value='${param.email}' />">
 
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" maxlength="72" required
-                   autocomplete="current-password">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" maxlength="72" required autocomplete="current-password">
 
-            <button type="submit" class="botao botao-largo">Entrar</button>
-        </form>
+                <div class="acoes-formulario">
+                    <button type="submit" class="botao botao-largo">Entrar</button>
+                </div>
+            </form>
 
-        <p class="texto-centro">Ainda não tem conta? <a href="${ctx}/cadastro">Cadastre-se</a></p>
+            <p class="acesso-rodape">Ainda não tem conta? <a href="${ctx}/cadastro">Criar conta</a></p>
+        </div>
     </div>
 </main>
 

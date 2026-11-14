@@ -62,6 +62,7 @@ public class CategoriaService {
             } else if (!categoriaDAO.atualizar(categoria)) {
                 throw new ValidacaoException("geral", "Categoria não encontrada.");
             }
+            MenuCategorias.limpar(); // o menu do site mostra a mudança na hora
             return categoria;
         } catch (DAOException e) {
             if (e.getMotivo() == DAOException.Motivo.DUPLICADO) {
@@ -79,6 +80,7 @@ public class CategoriaService {
             if (!categoriaDAO.excluir(idCategoria)) {
                 throw new ValidacaoException("geral", "Categoria não encontrada.");
             }
+            MenuCategorias.limpar();
         } catch (DAOException e) {
             if (e.getMotivo() == DAOException.Motivo.EM_USO) {
                 throw new ValidacaoException("geral",

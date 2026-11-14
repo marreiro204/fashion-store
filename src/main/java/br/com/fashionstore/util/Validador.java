@@ -101,13 +101,15 @@ public final class Validador {
 
     /**
      * Imagem do produto: aceita só
-     * - um nome de arquivo simples (ex.: camiseta-azul.jpg), procurado em assets/images/produtos/;
+     * - um nome de arquivo (ex.: camiseta-azul.jpg), procurado em assets/images/produtos/,
+     *   opcionalmente dentro de UMA subpasta (ex.: masculino/camisa-social.jpg);
      * - ou um endereço http(s)://.
-     * Recusa "javascript:...", "../../" e afins (segurança).
+     * Recusa "javascript:...", "../../" e afins (segurança): o nome da subpasta
+     * não pode ter ponto, então não há como "subir" de pasta.
      */
     public static boolean imagemValida(String imagem) {
         return imagem != null
-                && (imagem.matches("[A-Za-z0-9][A-Za-z0-9._-]*\\.(?i)(jpg|jpeg|png|webp|gif|svg)")
+                && (imagem.matches("([A-Za-z0-9][A-Za-z0-9_-]*/)?[A-Za-z0-9][A-Za-z0-9._-]*\\.(?i)(jpg|jpeg|png|webp|gif|svg)")
                     || imagem.matches("https?://[^\\s\"'<>]+"));
     }
 

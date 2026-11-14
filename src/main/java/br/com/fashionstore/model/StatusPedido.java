@@ -1,5 +1,8 @@
 package br.com.fashionstore.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Situações possíveis de um pedido.
  *
@@ -7,7 +10,13 @@ package br.com.fashionstore.model;
  * ela aceita. Este enum fixa esses valores para que a Web, o Flutter e o
  * banco usem sempre os mesmos textos.
  *
- * Cada constante tem uma "descricao" amigável para exibir nas telas.
+ * Caminho permitido (o admin não pode "pular" nem voltar etapas):
+ *
+ *   PENDENTE ──> PAGO ──> ENVIADO ──> ENTREGUE
+ *      │           │
+ *      └───────────┴──> CANCELADO   (devolve as peças ao estoque)
+ *
+ * ENTREGUE e CANCELADO são finais.
  */
 public enum StatusPedido {
 
@@ -33,5 +42,38 @@ public enum StatusPedido {
      */
     public boolean isFinal() {
         return this == ENTREGUE || this == CANCELADO;
+    }
+
+    /** A mudança deste status para o "novo" é permitida? */
+    public boolean podeMudarPara(StatusPedido novo) {
+        return switch (this) {
+            case PENDENTE -> novo == PAGO || novo == CANCELADO;
+            case PAGO -> novo == ENVIADO || novo == CANCELADO;
+            case ENVIADO -> novo == ENTREGUE;
+            case ENTREGUE, CANCELADO -> false;
+        };
+    }
+
+    /** Próximos status possíveis (para montar o seletor do admin). Na JSP: ${pedido.status.proximos} */
+    public List<StatusPedido> getProximos() {
+        List<StatusPedido> proximos = new ArrayList<>();
+        for (StatusPedido s : values()) {
+            if (podeMudarPara(s)) {
+                proximos.add(s);
+            }
+        }
+        return proximos;
+    }
+
+    /** Converte texto ("pago", "PAGO") em status; texto inválido -> null. */
+    public static StatusPedido de(String texto) {
+        if (texto == null) {
+            return null;
+        }
+        try {
+            return valueOf(texto.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

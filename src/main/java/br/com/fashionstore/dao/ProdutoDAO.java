@@ -146,6 +146,30 @@ public class ProdutoDAO {
      * então continua protegido contra SQL Injection.
      */
     public List<Produto> buscar(String texto, Integer idCategoria) {
+        return buscar(texto, idCategoria, ORDEM_NOME);
+    }
+
+    // Ordenações aceitas no catálogo. O texto do usuário NUNCA vai direto para o
+    // SQL: ele só escolhe uma destas opções fixas (ORDER BY não aceita "?").
+    public static final String ORDEM_NOME = "nome";
+    public static final String ORDEM_MENOR_PRECO = "menor-preco";
+    public static final String ORDEM_MAIOR_PRECO = "maior-preco";
+    public static final String ORDEM_NOVIDADES = "novidades";
+
+    private static String clausulaOrdem(String ordem) {
+        if (ordem == null) {
+            return "ORDER BY p.nome";
+        }
+        return switch (ordem) {
+            case ORDEM_MENOR_PRECO -> "ORDER BY p.preco ASC, p.nome";
+            case ORDEM_MAIOR_PRECO -> "ORDER BY p.preco DESC, p.nome";
+            case ORDEM_NOVIDADES -> "ORDER BY p.id_produto DESC";   // cadastrados por último primeiro
+            default -> "ORDER BY p.nome";
+        };
+    }
+
+    /** Igual à pesquisa acima, escolhendo a ordenação (ORDEM_...). */
+    public List<Produto> buscar(String texto, Integer idCategoria, String ordem) {
         StringBuilder sql = new StringBuilder(SELECT_BASE).append("WHERE 1 = 1 ");
         List<Object> parametros = new ArrayList<>();
 
@@ -159,7 +183,7 @@ public class ProdutoDAO {
             sql.append("AND p.id_categoria = ? ");
             parametros.add(idCategoria);
         }
-        sql.append("ORDER BY p.nome");
+        sql.append(clausulaOrdem(ordem));
 
         List<Produto> lista = new ArrayList<>();
         try (Connection con = ConnectionFactory.getConnection();
