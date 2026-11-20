@@ -1,0 +1,31 @@
+name: fashionstore_app
+description: "FashionStore - aplicativo do cliente (Trabalho Integrador Uninove)."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.1.0
+  cupertino_icons: ^1.0.8
+
+  # Chamadas HTTP para a API Java (JSON).
+  http: ^1.6.0
+  # Guarda no celular: endereço do servidor, token de login e carrinho.
+  shared_preferences: ^2.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Logos da marca (as fotos dos produtos NÃO ficam no app: vêm do servidor).
+  assets:
+    - assets/

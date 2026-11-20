@@ -8,9 +8,17 @@ A solução completa tem três partes:
 
 | Parte | Tecnologia | Neste repositório |
 |---|---|---|
-| Aplicação Web | Java 21, JSP, Servlets, HTML e CSS | ✅ |
-| Banco de dados | MySQL 8 | Criado por outro integrante (ver [Banco de dados](#banco-de-dados)) |
-| Aplicativo Mobile | Flutter | Desenvolvido por outro integrante |
+| Aplicação Web + API | Java 21, JSP, Servlets, HTML e CSS | ✅ raiz do repositório |
+| Banco de dados | MySQL 8 | ✅ [`database/fashionstore.sql`](database/fashionstore.sql) |
+| Aplicativo Mobile | Flutter (Android) | ✅ pasta [`mobile/`](mobile/README.md) |
+
+```
+ App Flutter (celular) ──HTTP/JSON──►  Tomcat: API /api/... + site  ──JDBC──►  MySQL
+ Navegador (site)      ──HTTP──────►        (Java Web)               ◄──────
+```
+
+O app **nunca acessa o MySQL direto**: tudo passa pela API Java, que usa as mesmas
+regras (Service) e o mesmo acesso a dados (DAO) do site.
 
 ---
 
@@ -37,6 +45,8 @@ Navegador → Filter (controle de acesso) → Servlet (controller) → Service (
 
 ```
 FashionStore/
+├── database/fashionstore.sql       script do banco MySQL (tabelas + dados iniciais)
+├── mobile/                         aplicativo Flutter (ver mobile/README.md)
 ├── pom.xml                         dependências e build (gera target/FashionStore.war)
 ├── docs/ajustes-modelagem.md       mudanças aprovadas em relação ao PDF do projeto
 ├── .vscode/tasks.json              tarefas do VS Code (build, deploy, Tomcat, testes)
@@ -80,7 +90,11 @@ página passa primeiro por um Servlet.
 
 ### 2. Configurar o banco
 
-Copie o modelo e preencha com os dados recebidos de quem criou o banco:
+Crie o banco executando [`database/fashionstore.sql`](database/fashionstore.sql) no MySQL
+Workbench (ou `mysql -u root -p` + `source database/fashionstore.sql`). Antes, troque
+`<DEFINA_UMA_SENHA>` (seção 5 do script) pela senha do usuário da aplicação.
+
+Depois copie o modelo de configuração e preencha com essa mesma senha:
 
 ```
 src/main/resources/db.properties.example  →  src/main/resources/db.properties
@@ -239,8 +253,12 @@ com o nome certo é colocado na pasta, ele aparece no lugar.
 
 ## Banco de dados
 
-O banco é criado por outro integrante do grupo, seguindo o **Guia do Banco de Dados**
-(entregue em PDF, com diagrama, dicionário de dados e scripts SQL).
+Script completo em [`database/fashionstore.sql`](database/fashionstore.sql): cria o banco,
+as 7 tabelas (com chaves primárias, estrangeiras e regras `CHECK`), o administrador
+inicial, categorias, produtos de exemplo e o usuário `fashionstore_app` (só
+`SELECT/INSERT/UPDATE/DELETE`). As senhas reais **não** ficam no repositório.
+
+Tabelas: `cliente`, `endereco`, `categoria`, `produto`, `estoque`, `pedido`, `item_pedido`.
 
 Principais ajustes em relação ao PDF do projeto (detalhes em [docs/ajustes-modelagem.md](docs/ajustes-modelagem.md)):
 
@@ -342,14 +360,16 @@ CORS liberado (inclusive para Flutter Web). Teste rápido pelo navegador:
 |---|---|---|
 | 1 | Configuração (Maven, Tomcat, estrutura) | ✅ |
 | 2 | Classes Model | ✅ |
-| 3 | Conexão JDBC e DAOs | ✅ (aguardando o banco para teste real) |
+| 3 | Conexão JDBC e DAOs | ✅ testado no MySQL real |
 | 4 | Cadastro, login, sessão e proteção de páginas | ✅ |
 | 5 | Produtos, categorias, catálogo, pesquisa e filtro | ✅ |
 | 6 | Estoque por tamanho | ✅ |
 | 7 | Carrinho e pedidos | ✅ |
 | 8 | Área administrativa (painel, clientes e pedidos) | ✅ |
 | 9 | Interface (identidade visual) | ✅ |
-| 10 | API JSON para o app Flutter e testes finais | ✅ (aguardando o banco para o teste integrado) |
+| 10 | API JSON para o app Flutter e testes finais | ✅ testado com o banco e o app |
+| 11 | Banco de dados MySQL (script completo) | ✅ |
+| 12 | Aplicativo Flutter (10 telas) | ✅ instalado e testado no Android |
 
 ---
 
