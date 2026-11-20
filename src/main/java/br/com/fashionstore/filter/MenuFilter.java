@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * (${categoriasMenu}), para que todas as páginas mostrem o mesmo menu
  * sem cada Servlet precisar carregar as categorias.
  *
- * Arquivos estáticos (CSS, imagens, JS) são ignorados.
+ * Arquivos estáticos (CSS, imagens, JS) e a API do app são ignorados.
  */
 @WebFilter(urlPatterns = "/*", dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.ERROR})
 public class MenuFilter extends HttpFilter {
@@ -27,7 +27,8 @@ public class MenuFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (!request.getServletPath().startsWith("/assets/")) {
+        String caminho = request.getServletPath();
+        if (!caminho.startsWith("/assets/") && !caminho.startsWith("/api/")) {   // a API (app) não usa o menu
             request.setAttribute("categoriasMenu", MenuCategorias.listar());
         }
         chain.doFilter(request, response);

@@ -24,7 +24,7 @@
             <c:when test="${empty banners}">
                 <div class="banner-slide ativo">
                     <div class="banner-provisorio">
-                        <img src="${ctx}/assets/images/banners/imagem-mulher.jpg" alt="">
+                        <img src="${ctx}/assets/images/marca/monograma-branco.png" alt="">
                     </div>
                 </div>
             </c:when>

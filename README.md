@@ -46,6 +46,7 @@ FashionStore/
     │   ├── dao/        acesso ao banco (JDBC + PreparedStatement + transações)
     │   ├── service/    regras de negócio e validações
     │   ├── servlet/    controllers (Home, Login, Cliente, Produto, Categoria, Estoque, Carrinho, Pedido, Admin)
+    │   ├── api/        API JSON para o app Flutter (ApiServlet + endpoints, conversor, carrinho do app)
     │   ├── filter/     ControleAcessoFilter (login e perfil ADMIN), MenuFilter (categorias do menu)
     │   └── util/       ConnectionFactory, SenhaUtil (BCrypt), Validador, SessaoUtil, ImagemUtil
     ├── main/resources/
@@ -131,6 +132,7 @@ Cada teste é uma classe com `main` em `src/test/java`, executada pelas tarefas 
 | Teste: estoque | Não | 30 |
 | Teste: carrinho e pedidos | Não | 47 |
 | Teste: administração | Não | 41 |
+| Teste: API | Não | 51 |
 | Teste: conexão com o banco | **Sim** | conexão |
 | Teste: DAOs (CRUD) | **Sim** | 41 (apaga os dados de teste no final) |
 
@@ -249,11 +251,88 @@ Principais ajustes em relação ao PDF do projeto (detalhes em [docs/ajustes-mod
 
 ---
 
-## Integração com o Flutter (planejada)
+## API para o app Flutter
 
-A mesma aplicação Java vai atender o app Mobile por **endpoints HTTP com JSON** (`/api/...`),
-criados como Servlets separados que reutilizam as camadas **Service** e **DAO** já existentes.
-Assim, Web e Mobile seguem exatamente as mesmas regras de negócio.
+A mesma aplicação Java atende o app Mobile por **endpoints HTTP com JSON** (`/api/...`).
+São Servlets separados (pacote `api`) que reutilizam as mesmas classes **Service** e **DAO**
+do site: Web e Mobile seguem exatamente as mesmas regras. **O app nunca acessa o MySQL direto.**
+
+**Endereço base:** `http://<servidor>:8080/FashionStore/api`
+(emulador Android: `http://10.0.2.2:8080/FashionStore/api`).
+Envie e receba **JSON em UTF-8** (`Content-Type: application/json`).
+
+### Endpoints
+
+| Método | Endereço | Login? | Corpo enviado | Resposta |
+|---|---|---|---|---|
+| GET | `/api/categorias` | — | — | lista de categorias |
+| GET | `/api/produtos?busca=&categoria=&ordem=` | — | — | lista de produtos (`ordem`: `nome`, `novidades`, `menor-preco`, `maior-preco`) |
+| GET | `/api/produtos/{id}` | — | — | um produto |
+| POST | `/api/clientes` | — | dados do cadastro | **201** `{token, validadeDias, cliente}` |
+| POST | `/api/login` | — | `{email, senha}` | `{token, validadeDias, cliente}` |
+| POST | `/api/logout` | token | — | `{mensagem}` |
+| GET | `/api/perfil` | token | — | cliente com endereços |
+| POST | `/api/carrinho/validar` | — | `{itens: [...]}` | itens com preço atual, `total`, `avisos` |
+| POST | `/api/pedidos` | token | `{idEndereco, itens: [...]}` | **201** pedido criado (status `PENDENTE`) |
+| GET | `/api/pedidos` | token | — | histórico (itens vazios) |
+| GET | `/api/pedidos/{id}` | token | — | pedido completo (só do próprio cliente) |
+
+**Login:** envie o token em todas as chamadas marcadas com "token":
+`Authorization: Bearer <token>`. O token vale 7 dias ou até o logout. Se o servidor
+for reiniciado, os tokens são perdidos e a API responde **401**: o app deve voltar ao login.
+
+### Exemplos
+
+```jsonc
+// POST /api/clientes
+{ "nome": "Ana Souza", "email": "ana@email.com", "cpf": "529.982.247-25", "telefone": "11988887777",
+  "senha": "Segredo123", "confirmacao": "Segredo123",
+  "endereco": { "cep": "01000-000", "logradouro": "Rua das Flores", "numero": "100", "complemento": "Apto 2",
+                "bairro": "Centro", "cidade": "São Paulo", "estado": "SP" } }
+
+// GET /api/produtos/1
+{ "idProduto": 1, "nome": "Vestido Midi Preto", "descricao": "...", "preco": 249.90,
+  "categoria": { "idCategoria": 2, "nome": "Feminino", "descricao": null },
+  "imagens": [ "http://10.0.2.2:8080/FashionStore/assets/images/produtos/feminino/vestido-preto.jpg",
+               "http://10.0.2.2:8080/FashionStore/assets/images/produtos/feminino/vestido-preto-2.jpg" ],
+  "tamanhos": [ { "tamanho": "P", "quantidade": 5, "ultimas": false },
+                { "tamanho": "M", "quantidade": 2, "ultimas": true } ],
+  "esgotado": false }
+
+// POST /api/pedidos   (Authorization: Bearer <token>)
+{ "idEndereco": 10, "itens": [ { "idProduto": 1, "tamanho": "M", "quantidade": 2 } ] }
+
+// Resposta 201
+{ "idPedido": 12, "dataPedido": "2026-11-18T20:30", "status": "PENDENTE", "statusDescricao": "Pendente",
+  "valorTotal": 499.80, "endereco": { "idEndereco": 10, "...": "...", "enderecoFormatado": "Rua das Flores, 100 ..." },
+  "itens": [ { "produto": { "idProduto": 1, "nome": "Vestido Midi Preto", "imagem": "http://..." },
+               "tamanho": "M", "quantidade": 2, "precoUnitario": 249.90, "subtotal": 499.80 } ] }
+```
+
+Observações:
+- `imagens` vazia = produto sem foto (o app mostra a imagem provisória).
+- O **preço nunca vem do app**: o servidor busca no banco e recalcula o total.
+- Dinheiro sai com 2 casas (`249.90`); datas em ISO (`2026-11-18T20:30`).
+- O cliente nunca recebe a senha.
+
+### Erros (sempre no mesmo formato)
+
+```json
+{ "erro": "Corrija os campos destacados.", "campos": { "email": "Este e-mail já está cadastrado." } }
+```
+
+| Código | Quando |
+|---|---|
+| 400 | JSON inválido, dados inválidos (`campos` traz a mensagem de cada campo), endereço inválido |
+| 401 | Sem token, token inválido/expirado, ou e-mail/senha errados no login |
+| 404 | Produto ou pedido não encontrado (inclusive pedido de outro cliente) |
+| 405 | Método errado (ex.: GET em `/api/carrinho/validar`) |
+| 409 | Estoque mudou durante a compra (esgotou, quantidade insuficiente, produto removido) |
+| 413 | Corpo maior que 64 KB |
+| 500 | Banco fora do ar ou erro no servidor |
+
+CORS liberado (inclusive para Flutter Web). Teste rápido pelo navegador:
+`http://localhost:8080/FashionStore/api/produtos`.
 
 ---
 
@@ -270,7 +349,7 @@ Assim, Web e Mobile seguem exatamente as mesmas regras de negócio.
 | 7 | Carrinho e pedidos | ✅ |
 | 8 | Área administrativa (painel, clientes e pedidos) | ✅ |
 | 9 | Interface (identidade visual) | ✅ |
-| 10 | Testes finais e preparação para o Flutter | ⏳ |
+| 10 | API JSON para o app Flutter e testes finais | ✅ (aguardando o banco para o teste integrado) |
 
 ---
 
